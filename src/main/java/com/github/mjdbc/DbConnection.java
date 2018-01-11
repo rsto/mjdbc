@@ -42,6 +42,7 @@ public class DbConnection {
         if (sqlConnection == null) {
             try {
                 sqlConnection = db.dataSource.getConnection();
+                sqlConnection.setAutoCommit(false);
             } catch (SQLException e) {
                 throw new RuntimeException("Failed to get connection from DataSource!", e);
             }
@@ -50,15 +51,15 @@ public class DbConnection {
     }
 
     public void commit() throws SQLException {
-        // commit only if connection was opened.
-        if (sqlConnection != null) {
+        // commit only if connection was opened and isn't in auto-commit mode.
+        if (sqlConnection != null && !sqlConnection.getAutoCommit()) {
             sqlConnection.commit();
         }
     }
 
     public void rollback() throws SQLException {
-        // rollback only if connection was opened.
-        if (sqlConnection != null) {
+        // rollback only if connection was opened isn't in auto-commit mode.
+        if (sqlConnection != null && !sqlConnection.getAutoCommit()) {
             sqlConnection.rollback();
         }
     }
